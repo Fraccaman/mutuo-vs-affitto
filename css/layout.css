@@ -1,0 +1,133 @@
+/* Layout: barra in alto, colonne, pannello parametri. */
+
+/* Barra in alto */
+.top {
+  position: sticky; top: 0; z-index: 20;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 1rem;
+  height: var(--nav-h); padding: 0 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px);
+}
+.brand { display: flex; align-items: center; gap: .6rem; color: inherit; text-decoration: none; min-width: 0; }
+.brand .logo { width: 32px; height: 32px; flex: none; }
+.brand span { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.brand b { font-size: 1.05rem; letter-spacing: -.01em; white-space: nowrap; }
+.sub { color: var(--muted); font-size: .78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-actions { display: flex; gap: .5rem; align-items: center; justify-content: flex-end; min-width: 0; }
+.top select, .top button { height: 36px; }
+.top select {
+  appearance: none; -webkit-appearance: none;
+  padding: 0 2rem 0 .75rem; line-height: 34px; font-weight: 500;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right .7rem center; background-size: 11px 8px;
+}
+.top .country { display: flex; }
+#share { display: inline-flex; align-items: center; gap: .4rem; background: var(--accent); color: var(--bg); border-color: var(--accent); }
+#share svg { width: 16px; height: 16px; }
+#to-params { display: none; }
+html { scroll-padding-top: calc(var(--nav-h) + 1rem); }
+
+/* Schede Semplice / Avanzata (nella barra) */
+.tabs { display: flex; gap: .2rem; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: .2rem; }
+.tabs button { flex: 1; border: 0; border-radius: 8px; height: 32px; padding: 0 1rem; font-weight: 600; color: var(--muted); background: transparent; }
+.tabs button:hover { color: var(--text); }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--bg); }
+
+/* Colonne */
+.layout { display: grid; grid-template-columns: 360px 1fr; gap: 1.25rem; padding: 1.25rem 1.5rem; max-width: 1500px; margin: 0 auto; }
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1rem;
+  align-self: start; position: sticky; top: calc(var(--nav-h) + 1rem); max-height: calc(100vh - var(--nav-h) - 2rem); overflow-y: auto;
+}
+.foot { text-align: center; color: var(--muted); font-size: .8rem; padding: 1.5rem; }
+
+/* Pannello parametri */
+.presets { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
+.presets button { font-size: .8rem; padding: .25rem .55rem; }
+fieldset { border: 0; border-top: 1px solid var(--line); margin: .75rem 0 0; padding: .6rem 0 0; }
+legend { font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding-right: .5rem; }
+.field { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: .5rem; align-items: center; margin: .35rem 0; font-size: .87rem; }
+.field.bool { grid-template-columns: 1fr; }
+.field.select select { width: 100%; padding: .3rem .4rem; font-size: .85rem; }
+.field.select { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+.field select { min-width: 0; max-width: 100%; }
+.field.bool label { display: flex; gap: .5rem; align-items: center; cursor: pointer; }
+.inp { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+.inp input { width: 100%; border: 0; background: transparent; padding: .3rem .45rem; text-align: right; min-width: 0; }
+.inp span { padding-right: .45rem; color: var(--muted); font-size: .8rem; }
+.inp:focus-within { border-color: var(--buy); }
+input:disabled { opacity: .45; }
+.field:has(input:disabled) label { opacity: .55; }
+.derived { margin-top: .5rem; padding: .5rem .6rem; border-radius: 8px; background: var(--bg); font-size: .8rem; color: var(--muted); }
+.derived b { color: var(--text); font-weight: 600; }
+.hint { font-size: .78rem; color: var(--muted); }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .results { order: -1; }   /* su schermi stretti i risultati vengono prima */
+  .panel { position: static; max-height: none; }
+  #to-params { display: inline-block; }
+  .sub { display: none; }
+}
+@media (max-width: 860px) {
+  :root { --nav-h: 104px; }   /* barra su due righe: titolo e pulsanti, poi le schede */
+  .top { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: 52px 44px; row-gap: 0; }
+  .tabs { grid-column: 1 / -1; grid-row: 2; align-self: start; }
+}
+@media (max-width: 640px) {
+  .layout { padding-left: 16px; padding-right: 16px; }
+  .top { padding: 0 16px; gap: .5rem; }
+  .field.select { grid-template-columns: minmax(0, 1fr); }
+  .brand b { font-size: .95rem; }
+  .brand .logo { width: 28px; height: 28px; }
+  #share span { display: none; }
+  #share { padding: 0 .6rem; }
+  .top select { max-width: 110px; }
+}
+@media (max-width: 380px) { .brand b { display: none; } }
+
+/* Box informativo dei parametri */
+.lbl { display: flex; align-items: center; gap: .35rem; min-width: 0; }
+.lbl label { min-width: 0; }
+.field.bool .lbl label { flex: 1; }
+.info {
+  flex: none; width: 1.15rem; height: 1.15rem; padding: 0; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+  font: italic 600 .7rem/1 Georgia, serif; cursor: help; display: inline-grid; place-items: center;
+}
+.info:hover, .info:focus-visible, .info[aria-describedby] { color: var(--surface); background: var(--buy); border-color: var(--buy); }
+.tip {
+  position: fixed; z-index: 50; background: var(--surface); color: var(--text);
+  border: 1px solid var(--line); border-radius: 10px; padding: .65rem .8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18); font-size: .82rem; line-height: 1.45;
+}
+.tip p { margin: .3rem 0 0; }
+.tip-title { display: block; font-size: .85rem; }
+.tip-meta { color: var(--muted); font-size: .76rem; border-top: 1px solid var(--line); padding-top: .35rem; margin-top: .45rem !important; }
+
+/* Preset */
+.presets { display: block; }
+.presets > label { font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.preset-row { display: flex; gap: .4rem; margin-top: .3rem; }
+.preset-row select { flex: 1; min-width: 0; padding: .35rem .45rem; font-size: .88rem; }
+.preset-desc { margin: .35rem 0 0; font-size: .78rem; color: var(--muted); min-height: 0; }
+.preset-desc:empty { display: none; }
+.preset-actions { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+.preset-actions button, .file-btn { font-size: .78rem; padding: .22rem .5rem; }
+.file-btn { border: 1px solid var(--line); border-radius: 8px; cursor: pointer; background: var(--surface); }
+.file-btn:hover { border-color: var(--muted); }
+.file-btn:focus-within { outline: 2px solid var(--buy); outline-offset: 2px; }
+.tip code { font-size: .74rem; }
+.preset-dialog { width: min(640px, calc(100vw - 2rem)); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); padding: 1rem 1.1rem; }
+.preset-dialog::backdrop { background: rgba(0, 0, 0, .35); }
+.preset-dialog h2 { margin: 0 0 .3rem; font-size: 1.05rem; }
+.preset-tools { margin: .3rem 0 .5rem; font-size: .85rem; }
+.preset-dialog textarea { width: 100%; box-sizing: border-box; font: .8rem/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: .5rem; resize: vertical; }
+.preset-msg { font-size: .82rem; }
+.preset-msg ul { margin: .4rem 0; padding-left: 1.1rem; }
+.preset-msg .err { color: var(--ko); }
+.preset-msg .warn { color: var(--rent); }
+.preset-dialog-actions { display: flex; justify-content: flex-end; gap: .4rem; margin-top: .6rem; }
+.preset-dialog-actions .primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }

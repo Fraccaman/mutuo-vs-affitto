@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compro o Affitto?</title>
+  <meta name="description" content="Simulatore Monte Carlo: comprare casa con mutuo o affittare e investire la differenza in ETF. Tutti i parametri configurabili.">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/results.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#" aria-label="Compro o Affitto? Torna all’inizio">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--buy)"/><path d="M7 16.5 16 9l9 7.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 15v8h5v-5h2v5h5v-8" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg>
+      <span><b>Compro o Affitto?</b><small class="sub">Mutuo vs affitto + ETF, migliaia di futuri possibili</small></span>
+    </a>
+    <nav class="tabs" role="tablist" aria-label="Vista dei risultati">
+      <button type="button" role="tab" data-view="simple">Semplice</button>
+      <button type="button" role="tab" data-view="advanced">Avanzata</button>
+      <button type="button" role="tab" data-view="overview">Insieme</button>
+    </nav>
+    <div class="top-actions">
+      <label class="country"><span class="sr">Capoluogo</span>
+        <select id="city" title="Capoluogo"></select>
+      </label>
+      <button id="to-params" type="button" class="ghost">Parametri</button>
+      <button id="share" type="button" aria-label="Copia link dello scenario" title="Copia link dello scenario"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5M14 10a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Copia link</span></button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel" id="params">
+      <div class="presets">
+        <label for="preset-select">Preset</label>
+        <div class="preset-row">
+          <select id="preset-select"></select>
+          <button type="button" id="preset-delete" class="ghost" hidden title="Elimina questo preset salvato">Elimina</button>
+        </div>
+        <p id="preset-desc" class="preset-desc"></p>
+        <div class="preset-actions">
+          <button type="button" id="preset-import" title="Incolla o scrivi un preset in JSON">Incolla JSON</button>
+          <label class="file-btn" title="Carica un preset da un file .json">Carica file<input type="file" id="preset-file" accept=".json,application/json" hidden></label>
+          <button type="button" id="preset-export" title="Scarica lo scenario corrente come file JSON con tutti i parametri">Esporta JSON</button>
+          <button type="button" id="preset-save" title="Salva lo scenario corrente nel menu (solo in questo browser)">Salva</button>
+        </div>
+      </div>
+      <dialog id="preset-dialog" class="preset-dialog">
+        <h2>Preset in JSON</h2>
+        <p class="caption">Percentuali come frazioni (20% = 0.2). Chiavi dei parametri: quelle del pannello (passa il mouse sulla “i” per la spiegazione). Formato completo in <code>js/data/presets.js</code>.</p>
+        <p class="preset-tools"><button type="button" class="link" id="preset-template">Esempio</button> · <button type="button" class="link" id="preset-copy-current">Scenario corrente</button></p>
+        <textarea id="preset-json" rows="16" spellcheck="false" aria-label="Preset in formato JSON"></textarea>
+        <div id="preset-msg" class="preset-msg" aria-live="polite"></div>
+        <div class="preset-dialog-actions">
+          <button type="button" id="preset-cancel" class="ghost">Chiudi</button>
+          <button type="button" id="preset-apply">Applica</button>
+          <button type="button" id="preset-apply-save" class="primary">Applica e salva</button>
+        </div>
+      </dialog>
+      <form id="form" autocomplete="off"></form>
+      <p class="hint">Tutti i valori percentuali sono annui. Il link condiviso include ogni parametro.</p>
+    </aside>
+
+    <section class="results">
+      <!-- riguardano la città selezionata: nel confronto tra città non servono -->
+      <article class="card" id="setup" data-views="simple advanced"></article>
+      <article class="card loan" id="loan-check" data-views="simple advanced"></article>
+
+      <div id="view-simple" class="view">
+        <article class="card hero" id="s-hero"></article>
+        <article class="card why" id="s-why"></article>
+        <article class="card">
+          <h2 id="s-wealth-title">Quanto avrai alla fine</h2>
+          <p class="caption" id="s-wealth-caption"></p>
+          <div id="s-wealth"></div>
+        </article>
+        <div class="grid2">
+          <article class="card">
+            <h2>Dipende da quanto resti</h2>
+            <p class="caption">Probabilità che comprare convenga se vendi (o smetti di affittare) dopo…</p>
+            <div id="s-horizon"></div>
+          </article>
+          <article class="card">
+            <h2>Il primo mese</h2>
+            <p class="caption">Uscite per la casa e quanto resta da investire.</p>
+            <div id="s-month"></div>
+          </article>
+        </div>
+        <article class="card">
+          <h2>Quanto costa abitare ogni mese</h2>
+          <p class="caption">Uscite mensili per la casa nello scenario medio: chi compra paga rata, manutenzione e condominio; chi affitta paga canone e la sua parte di condominio. La linea tratteggiata è lo stipendio netto.</p>
+          <div class="chart"><canvas id="s-housing"></canvas></div>
+        </article>
+        <article class="card">
+          <h2>Soldi che non tornano indietro</h2>
+          <p class="caption" id="s-costs-caption"></p>
+          <div id="s-costs"></div>
+        </article>
+        <article class="card">
+          <h2>Cosa cambia di più il risultato</h2>
+          <div id="s-drivers"></div>
+        </article>
+        <article class="card">
+          <h2>Da sapere</h2>
+          <ul id="s-notes" class="plain"></ul>
+          <p><button type="button" class="link" data-goto="advanced">Vedi l’analisi completa →</button> · <button type="button" class="link" data-goto="overview">Confronta tutte le città →</button></p>
+        </article>
+      </div>
+
+      <div id="view-advanced" class="view">
+      <div class="kpis" id="kpis"></div>
+
+      <article class="card verdict" id="verdict"></article>
+      <article class="card why" id="a-why"></article>
+
+      <article class="card" id="risk-card">
+        <h2>Rischio, non solo media</h2>
+        <p class="caption">La stessa media può nascondere esiti molto diversi. Evidenziata la strategia migliore per ogni misura.</p>
+        <div class="table-wrap"><table id="risk"></table></div>
+      </article>
+
+      <article class="card" id="risks-card">
+        <h2>Rischi di lungo periodo</h2>
+        <p class="caption">Ogni riga divide i futuri simulati in due gruppi: quelli in cui l’evento succede e quelli in cui non succede. Mostra quanto spesso succede e come cambia il risultato.</p>
+        <div class="table-wrap"><table id="risks"></table></div>
+        <p class="caption" id="risks-note"></p>
+      </article>
+
+      <article class="card">
+        <h2>Patrimonio netto nel tempo</h2>
+        <p class="caption">Linea = mediana. Bande = 25–75° e 5–95° percentile delle simulazioni. Patrimonio "liquidato": casa venduta al netto dei costi, mutuo residuo estinto, ETF venduti e tassati.</p>
+        <div class="chart"><canvas id="fan"></canvas></div>
+      </article>
+
+      <article class="card">
+        <h2>Da dove viene il patrimonio</h2>
+        <p class="caption">Scenario medio. Per chi compra: valore della casa al netto di mutuo residuo e costi di vendita, più gli ETF comprati con i risparmi. Per chi affitta: solo ETF (al netto delle tasse).</p>
+        <div class="chart"><canvas id="a-mix"></canvas></div>
+      </article>
+
+      <article class="card">
+        <h2>Chi vince se cambiano borsa e mercato immobiliare</h2>
+        <p class="caption" id="a-heat-caption"></p>
+        <div class="heat-wrap"><div id="a-heat"></div></div>
+      </article>
+
+      <div class="grid2">
+        <article class="card">
+          <h2>Probabilità che comprare vinca</h2>
+          <p class="caption">Quota di simulazioni in cui chi compra ha più patrimonio di chi affitta, per anno di vendita/uscita.</p>
+          <div class="chart small"><canvas id="prob"></canvas></div>
+        </article>
+        <article class="card">
+          <h2>Distribuzione del vantaggio finale</h2>
+          <p class="caption">Patrimonio compro − patrimonio affitto all'orizzonte. A destra dello zero vince chi compra.</p>
+          <div class="chart small"><canvas id="hist"></canvas></div>
+        </article>
+      </div>
+
+      <article class="card">
+        <h2>Sensitività (scenario deterministico)</h2>
+        <p class="caption">Quanto cambia il vantaggio di chi compra a fine orizzonte muovendo un parametro alla volta.</p>
+        <div class="chart"><canvas id="tornado"></canvas></div>
+      </article>
+
+      <article class="card">
+        <h2>Scenario deterministico anno per anno</h2>
+        <p class="caption">Un solo futuro, tutto cresce ai tassi medi: è il metodo del post originale.</p>
+        <div class="table-wrap"><table id="table"></table></div>
+      </article>
+
+      <article class="card city">
+        <h2 id="city-title">Dati della città</h2>
+        <div id="city-body"></div>
+      </article>
+
+      <article class="card notes">
+        <h2>Note su modello e fisco</h2>
+        <div id="italy-notes"></div>
+        <h3>Come funziona</h3>
+        <ul>
+          <li>Simulazione mensile. Chi affitta investe subito anticipo + spese d'acquisto; entrambi investono ogni mese il flusso di cassa libero. Se il flusso è negativo vendono ETF (pagando le tasse) o, finiti quelli, si indebitano al tasso del mutuo + 3%.</li>
+          <li>In ogni simulazione le due strategie vivono lo stesso futuro (borsa, inflazione, licenziamenti, traslochi): si confrontano strategie, non fortuna.</li>
+          <li><b>Azioni</b>: lognormale, Student-t con code grasse, oppure modello a regimi bull/bear (regime-switching lognormal, Hardy 2001): le crisi durano mesi, la volatilità si concentra nei crolli. Il rendimento indicato è il composto mediano.</li>
+          <li><b>Incertezza sui parametri</b>: nessuno conosce il vero rendimento dei prossimi 30 anni. Ogni simulazione estrae il proprio rendimento atteso di ETF e casa; le code si allargano.</li>
+          <li><b>Casa</b>: crescita attesa + inflazione + una componente con momentum (anni buoni seguono anni buoni). Nel lungo periodo il rapporto prezzo/affitto torna alla media: prezzi e affitti non divergono per sempre. Correlabile con la borsa. Volatilità calibrata sulla variabilità storica della città.</li>
+          <li><b>Inflazione</b>: AR(1), oppure a regimi: anni normali e shock di 1–3 anni come nel 2022–2023. La media di lungo periodo indicata include gli shock. Trascina affitti, stipendi, spese e prezzi delle case. <b>Euribor</b>: modello di Vasicek che segue il livello dell'inflazione (la BCE alza i tassi negli shock), rata del variabile ricalcolata ogni anno.</li>
+          <li><b>Eventi di vita</b>: disoccupazione (durata esponenziale, sussidio parziale) e traslochi forzati (chi possiede paga costi di vendita + riacquisto; chi affitta agenzia e trasloco).</li>
+          <li><b>Rischi di lungo periodo</b> (attivi nello scenario di partenza, preset “Dati città + rischi di lungo periodo”; il preset “Dati città + statistica” li spegne): <i>declino demografico</i>, uno scenario per futuro in cui prezzi e affitti crescono meno e vendere costa di più; chi affitta ne beneficia, chi possiede no. <i>Rischio della singola casa</i>: la tua casa si scosta dal mercato in modo casuale (a media invariata) e il quartiere può degradare; un trasloco forzato rende la perdita definitiva. <i>Obbligo di classe energetica</i>: in un anno incerto o paghi i lavori (al netto degli incentivi, poi risparmi in bolletta) o la casa perde valore; il proprietario di chi affitta ribalta una parte del costo sul canone. Sono ipotesi, non stime: la tabella “Rischi di lungo periodo” mostra quanto pesano.</li>
+          <li><b>Rischio</b>: CVaR (media del peggior 5%), equivalente certo con utilità CRRA, intervalli di confidenza di Wilson sulle probabilità.</li>
+          <li>Non modellati: rinegoziazione/surroga, ristrutturazioni straordinarie (salvo l’obbligo energetico), vincoli di accesso al credito, utilità di vivere in casa propria o di potersi spostare.</li>
+        </ul>
+      </article>
+      </div>
+
+      <div id="view-overview" class="view">
+        <article class="card">
+          <h2>Tutte le città a confronto</h2>
+          <p class="caption" id="cmp-intro"></p>
+          <div class="cmp-controls">
+            <label for="cmp-salary">Stipendio nelle altre città</label>
+            <select id="cmp-salary">
+              <option value="city">RAL media della città</option>
+              <option value="mine" id="cmp-salary-mine">Lo stesso della città selezionata</option>
+            </select>
+            <span id="cmp-progress" class="cmp-progress" hidden></span>
+          </div>
+        </article>
+
+        <article class="card cmp-mc">
+          <h2 id="cmp-verdict-title">Dove comprare conviene di più</h2>
+          <p class="caption" id="cmp-verdict-caption"></p>
+          <div id="cmp-verdict"></div>
+          <div id="cmp-insight" class="cmp-insight"></div>
+        </article>
+
+        <div class="grid2">
+          <article class="card">
+            <h2>Rata e affitto al mese</h2>
+            <p class="caption">Rata del mutuo (primo anno) e canone di mercato per la stessa casa, oggi.</p>
+            <div class="chart small"><canvas id="cmp-monthly"></canvas></div>
+          </article>
+          <article class="card">
+            <h2>Quanto pesano sullo stipendio</h2>
+            <p class="caption">Rata e affitto in percentuale del netto medio mensile (annuo / 12). Oltre la linea tratteggiata la banca di solito non concede il mutuo.</p>
+            <div class="chart small"><canvas id="cmp-share"></canvas></div>
+          </article>
+        </div>
+
+        <div class="grid2">
+          <article class="card">
+            <h2>Canone rispetto al prezzo</h2>
+            <p class="caption">Affitto annuo diviso prezzo (rendimento lordo da locazione), per fonte. Più è alto, più l’affitto costa rispetto alla casa: comprare parte avvantaggiato.</p>
+            <div class="chart small"><canvas id="cmp-yield"></canvas></div>
+          </article>
+          <article class="card">
+            <h2>Anni di stipendio per comprare</h2>
+            <p class="caption">Prezzo della casa diviso stipendio netto annuo: quanto è cara la casa rispetto a quanto si guadagna lì.</p>
+            <div class="chart small"><canvas id="cmp-years"></canvas></div>
+          </article>
+        </div>
+
+        <article class="card cmp-mc">
+          <h2 id="cmp-wealth-title">Patrimonio alla fine</h2>
+          <p class="caption" id="cmp-wealth-caption"></p>
+          <div class="chart"><canvas id="cmp-wealth"></canvas></div>
+        </article>
+
+        <article class="card cmp-mc">
+          <h2 id="cmp-prob-title">Probabilità che comprare vinca, anno per anno</h2>
+          <p class="caption" id="cmp-prob-caption"></p>
+          <div class="chart"><canvas id="cmp-prob"></canvas></div>
+        </article>
+
+        <div class="grid2">
+          <article class="card">
+            <h2>Prezzi delle case dal 2016</h2>
+            <p class="caption">Prezzo medio OMI per semestre, indice 1° semestre 2016 = 100. A Napoli e Firenze il salto del 2° semestre 2024 è la revisione delle zone OMI, non un rialzo reale.</p>
+            <div class="chart small"><canvas id="cmp-omi"></canvas></div>
+          </article>
+          <article class="card">
+            <h2>Affitti richiesti dal 2020</h2>
+            <p class="caption" id="cmp-rents-caption"></p>
+            <div class="chart small"><canvas id="cmp-rents"></canvas></div>
+          </article>
+        </div>
+
+        <article class="card cmp-mc">
+          <h2>Tutti i numeri</h2>
+          <p class="caption" id="cmp-table-caption"></p>
+          <div class="table-wrap"><table id="cmp-table" class="cmp-table"></table></div>
+        </article>
+
+        <article class="card">
+          <h2>Da sapere</h2>
+          <ul class="plain">
+            <li>Il confronto cambia solo i dati del capoluogo; superficie, anticipo, durata del mutuo, orizzonte, ETF, spese di vita, eventi e rischi restano quelli del pannello. La città selezionata usa esattamente i parametri attuali, anche se li hai modificati a mano.</li>
+            <li>Con «RAL media della città» lo stipendio è la retribuzione media locale (JobPricing, MEF): a parità di casa, dove si guadagna di più resta più da investire. Con «lo stesso della città selezionata» il reddito è il tuo ovunque, al netto delle addizionali di ogni città.</li>
+            <li>Le serie storiche non sono omogenee: a Firenze crescita e volatilità dei prezzi sono fissate a mano, a Napoli la crescita è all’1% per la revisione delle zone OMI, a Roma e Palermo la crescita OMI 2016–2026 è circa zero, Milano e Verona includono il boom recente. I dettagli sono nella scheda «Dati della città» di ogni capoluogo (vista avanzata).</li>
+            <li>Stesso seed per tutte le città: le differenze non dipendono dal caso, ma ogni probabilità ha comunque un margine di uno o due punti.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Strumento educativo, non consulenza finanziaria. Codice open source.
+  </footer>
+
+  <!-- Script classici (non moduli ES) per funzionare anche aprendo il file con doppio click.
+       L'ordine conta: dati → modello → interfaccia → avvio. -->
+  <script src="js/data/italy.js"></script>
+  <script src="js/data/cities.js"></script>
+  <script src="js/data/cities/BO.js"></script>
+  <script src="js/data/cities/FI.js"></script>
+  <script src="js/data/cities/MI.js"></script>
+  <script src="js/data/cities/NA.js"></script>
+  <script src="js/data/cities/PA.js"></script>
+  <script src="js/data/cities/RM.js"></script>
+  <script src="js/data/cities/VR.js"></script>
+  <script src="js/data/presets.js"></script>
+  <script src="js/model/defaults.js"></script>
+  <script src="js/model/random.js"></script>
+  <script src="js/model/stats.js"></script>
+  <script src="js/model/taxes.js"></script>
+  <script src="js/model/finance.js"></script>
+  <script src="js/model/equity.js"></script>
+  <script src="js/model/calibration.js"></script>
+  <script src="js/model/simulate.js"></script>
+  <script src="js/model/analysis.js"></script>
+  <script src="js/model/compare.js"></script>
+  <script src="js/ui/format.js"></script>
+  <script src="js/ui/schema.js"></script>
+  <script src="js/ui/state.js"></script>
+  <script src="js/ui/help.js"></script>
+  <script src="js/ui/form.js"></script>
+  <script src="js/ui/presets.js"></script>
+  <script src="js/ui/setup.js"></script>
+  <script src="js/ui/city.js"></script>
+  <script src="js/ui/loan.js"></script>
+  <script src="js/ui/why.js"></script>
+  <script src="js/ui/simple.js"></script>
+  <script src="js/ui/advanced.js"></script>
+  <script src="js/ui/overview.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+/* Base: colori del tema (chiaro/scuro), reset, elementi comuni. */
+
+:root {
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --text: #1d1f23;
+  --muted: #5f6570;
+  --line: #e2e0d9;
+  --grid: #ecebe6;
+  --buy: #2f6fdb;
+  --rent: #c46f1c;
+  --heat-mid: #f0efec;
+  --win: #e7f0ff;
+  --accent: #1d1f23;
+  --ok: #1f8a4c;
+  --ko: #c8402f;
+  /* Colori delle città nei grafici di confronto (scheda Insieme): palette categorica in ordine
+     fisso, verificata per daltonismo e contrasto su entrambi i temi. Per un'ottava città aggiungere
+     uno slot e verificarlo di nuovo. */
+  --cat-1: #2a78d6; --cat-2: #1baf7a; --cat-3: #eda100; --cat-4: #e87ba4; --cat-5: #008300; --cat-6: #6250d6; --cat-7: #e34948;
+  --nav-h: 60px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131416;
+    --surface: #1c1e21;
+    --text: #e8e6e1;
+    --muted: #9aa0a8;
+    --line: #2c2f34;
+    --grid: #26292d;
+    --buy: #5a8ee6;
+    --rent: #cc7d32;
+    --heat-mid: #383835;
+    --win: #1f2c44;
+    --accent: #e8e6e1;
+    --ok: #4cc27f;
+    --ko: #f0705e;
+    --cat-1: #3987e5; --cat-2: #199e70; --cat-3: #c98500; --cat-4: #d55181; --cat-5: #008300; --cat-6: #9085e9; --cat-7: #e66767;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.05rem; margin: 0 0 .25rem; }
+h3 { font-size: .95rem; margin: 1rem 0 .25rem; }
+button, select, input { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Controlli */
+select, button {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: .4rem .7rem; cursor: pointer;
+}
+button:hover { border-color: var(--muted); }
+button:focus-visible, select:focus-visible, .brand:focus-visible { outline: 2px solid var(--buy); outline-offset: 2px; }
+button.link { border: 0; background: none; color: var(--buy); padding: 0; font-weight: 600; }
+
+/* Testo */
+.caption { margin: 0 0 .75rem; color: var(--muted); font-size: .85rem; }
+.muted { color: var(--muted); font-weight: 400; font-size: .75rem; }
+.legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin-top: .5rem; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: .35rem; background: var(--buy); }
+.legend span.r::before { background: var(--rent); }
+ul.plain { padding-left: 1.1rem; margin: .25rem 0; }
+ul.plain li { margin: .35rem 0; }
+.card a { color: var(--buy); }
+
+/* Tabelle */
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .85rem; font-variant-numeric: tabular-nums; }
+th, td { padding: .35rem .6rem; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: .78rem; }
+td:first-child, th:first-child { text-align: left; }
+td.win { background: var(--win); font-weight: 600; }
+td.desc, th.desc { text-align: left; color: var(--muted); white-space: normal; font-size: .8rem; }

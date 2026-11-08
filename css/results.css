@@ -1,0 +1,190 @@
+/* Risultati: schede, KPI, grafici e infografiche. */
+
+.results { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.view { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Card e griglie */
+/* Contenuto in attesa di disegno pigro (js/ui/format.js, lazy): segnaposto della stessa altezza */
+.chart.lazy-wait:not(:has(canvas[height])), .lazy-wait #a-heat:empty { background: var(--bg); border-radius: 8px; }
+.lazy-wait #a-heat:empty { min-height: 300px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; min-width: 0; }
+.chart { position: relative; height: 380px; }
+.chart.small { height: 260px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
+.verdict p { margin: .4rem 0; }
+.verdict { border-left: 4px solid var(--buy); }
+.notes ul { padding-left: 1.2rem; margin: .25rem 0; font-size: .88rem; }
+.notes li { margin: .2rem 0; }
+.card.city h3 { margin-top: 1.25rem; }
+.card.city .grid2 { margin-bottom: .5rem; }
+
+/* KPI (vista avanzata) */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .8rem 1rem; border-top: 3px solid var(--muted); }
+.kpi.buy { border-top-color: var(--buy); }
+.kpi.rent { border-top-color: var(--rent); }
+.k-label { font-size: .8rem; color: var(--muted); }
+.k-value { font-size: 1.6rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.k-sub { font-size: .75rem; color: var(--muted); }
+
+/* Verdetto con waffle (vista semplice) */
+.hero { padding: 1.4rem 1.5rem; border-left: 4px solid var(--buy); }
+.hero.rent { border-left-color: var(--rent); }
+.hero.even { border-left-color: var(--muted); }
+.hero h2 { font-size: 1.6rem; margin: 0 0 .3rem; letter-spacing: -.01em; }
+.hero .lead { font-size: 1.05rem; margin: 0 0 1rem; }
+.hero-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem; align-items: center; }
+.waffle { display: grid; grid-template-columns: repeat(10, 14px); gap: 3px; }
+.waffle i { width: 14px; height: 14px; border-radius: 3px; background: var(--rent); }
+.waffle i.b { background: var(--buy); }
+
+/* Patrimonio finale: barre casa + liquidi */
+.wealth-row { display: grid; grid-template-columns: 170px 1fr; gap: .75rem; align-items: center; padding: .6rem 0; border-top: 1px solid var(--line); }
+.wealth-row:first-child { border-top: 0; }
+.wealth-row .what b { display: block; }
+.wealth-row .what small { color: var(--muted); }
+.bars { display: flex; flex-direction: column; gap: .3rem; }
+.bar { display: grid; grid-template-columns: 1fr 190px; gap: .5rem; align-items: center; font-size: .85rem; }
+.bar .track { background: var(--bg); border-radius: 4px; height: 18px; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 4px; background: var(--buy); }
+.bar.r .fill { background: var(--rent); }
+.bar .val { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.bar .val small { display: block; font-weight: 400; color: var(--muted); font-size: .75rem; }
+.track.split { display: flex; gap: 2px; background: transparent; }
+.track.split .fill { border-radius: 0; flex: none; }
+.track.split .fill:first-child { border-radius: 4px 0 0 4px; }
+.track.split .fill:last-child { border-radius: 0 4px 4px 0; }
+.track.split .fill:only-child { border-radius: 4px; }
+.track.split .fill[style*="width:0%"] { display: none; }
+.bar .fill.liq { background: color-mix(in srgb, var(--buy) 45%, var(--surface)); }
+.bar.r .fill.liq { background: var(--rent); }
+.wealth-legend span.home::before { background: var(--buy); }
+.wealth-legend span.liq::before { background: color-mix(in srgb, var(--buy) 45%, var(--surface)); }
+.wealth-legend span.liq.r::before { background: var(--rent); }
+
+/* Orizzonte, primo mese, fattori chiave (barre di probabilità condivise con il confronto tra città) */
+.hz { display: grid; grid-template-columns: 70px 1fr 120px; gap: .5rem; align-items: center; padding: .3rem 0; font-size: .88rem; }
+.hz .track, .cmp-row .track { height: 14px; border-radius: 7px; background: var(--rent); overflow: hidden; }
+.hz .fill, .cmp-row .fill { height: 100%; background: var(--buy); }
+.hz .word, .cmp-row .word { color: var(--muted); font-size: .8rem; }
+
+.month { width: 100%; font-size: .88rem; }
+.month td, .month th { white-space: normal; }
+.month td { text-align: right; }
+.month td:first-child { text-align: left; }
+.month tr.total td { font-weight: 650; border-top: 2px solid var(--line); }
+.drivers { margin: 0; padding-left: 1.1rem; }
+.drivers li { margin: .45rem 0; }
+
+/* Verifica mutuo */
+.loan { border-left: 4px solid var(--ok); }
+.loan.ko { border-left-color: var(--ko); }
+.loan h2 { color: var(--ok); }
+.loan.ko h2 { color: var(--ko); }
+.loan-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin: .5rem 0; }
+.loan-grid div { display: flex; flex-direction: column; }
+.loan-grid span, .loan-grid small { font-size: .78rem; color: var(--muted); }
+.loan-grid b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.bad { color: var(--ko); }
+
+/* Costi non recuperabili */
+.cost-row { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: .75rem; align-items: center; padding: .45rem 0; border-top: 1px solid var(--line); }
+.cost-row:first-child { border-top: 0; }
+.cost-row.total { border-top: 2px solid var(--line); font-weight: 650; }
+.cost-row small { display: block; color: var(--muted); font-weight: 400; font-size: .75rem; }
+.cost-row .bars { gap: 4px; }
+.cost-row .bar .track { background: transparent; }
+
+/* Heatmap */
+.heat-wrap { overflow-x: auto; }
+.heat { display: grid; gap: 2px; font-size: .78rem; font-variant-numeric: tabular-nums; min-width: 520px; }
+.heat .hd { color: var(--muted); text-align: center; padding: .25rem; display: flex; align-items: center; justify-content: center; }
+.heat .cell { border-radius: 4px; padding: .5rem .2rem; text-align: center; font-weight: 600; cursor: default; }
+.heat .cell.cur { outline: 2px solid var(--text); outline-offset: 1px; }
+.heat .axis { color: var(--muted); font-size: .78rem; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .k-value { font-size: 1.3rem; }
+  .chart { height: 300px; }
+  .hero-grid { grid-template-columns: 1fr; }
+  .wealth-row { grid-template-columns: 1fr; }
+  .bar { grid-template-columns: 1fr 120px; }
+  .hz { grid-template-columns: 60px 1fr; }
+  .cmp-row { grid-template-columns: 90px minmax(0, 1fr); }
+  .hz .word, .cmp-row .word, .cmp-row .med { grid-column: 2; }
+  .loan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Dati di partenza della simulazione */
+.setup summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+.setup summary::-webkit-details-marker { display: none; }
+.setup summary::before { content: '▸'; color: var(--muted); transition: transform .15s; }
+.setup[open] summary::before { transform: rotate(90deg); }
+.setup summary small { font-weight: 400; color: var(--muted); font-size: .8rem; }
+.setup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .5rem .9rem; margin-top: .75rem; }
+.setup-grid div { display: flex; flex-direction: column; min-width: 0; }
+.setup-grid span { font-size: .75rem; color: var(--muted); }
+.setup-grid b { font-size: .95rem; font-variant-numeric: tabular-nums; }
+.setup-grid small { font-size: .74rem; color: var(--muted); }
+.setup-foot { margin: .7rem 0 0; font-size: .8rem; color: var(--muted); }
+
+/* Perché vince chi vince */
+.why-table td.num, .why-table th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.why-table td.num small { display: block; color: var(--muted); font-size: .72rem; }
+.why-table tfoot td { font-weight: 600; border-top: 2px solid var(--line); }
+.why-list { padding-left: 1.1rem; margin: .4rem 0; }
+.why-list li { margin: .35rem 0; line-height: 1.5; }
+.why-warn { border-left: 3px solid var(--rent); padding: .4rem .7rem; background: var(--bg); border-radius: 0 6px 6px 0; font-size: .88rem; }
+.why-lead { font-size: 1rem; line-height: 1.55; margin: .3rem 0 .9rem; }
+.why-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .6rem; margin-bottom: .4rem; }
+.why-kpi { display: flex; flex-direction: column; background: var(--bg); border-radius: 10px; padding: .6rem .75rem; border-top: 3px solid var(--muted); min-width: 0; }
+.why-kpi.buy { border-top-color: var(--buy); }
+.why-kpi.rent { border-top-color: var(--rent); }
+.why-kpi span { font-size: .75rem; color: var(--muted); }
+.why-kpi b { font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.why-kpi small { font-size: .72rem; color: var(--muted); line-height: 1.35; }
+.why-detail { margin: 1rem 0 .4rem; border: 1px solid var(--line); border-radius: 10px; padding: .55rem .8rem; }
+.why-detail summary { cursor: pointer; font-weight: 600; display: flex; gap: .5rem; flex-wrap: wrap; align-items: baseline; }
+.why-detail summary small { font-weight: 400; color: var(--muted); font-size: .8rem; }
+.why-detail .table-wrap { margin-top: .5rem; }
+.why-forces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.why-force { background: var(--bg); border-radius: 10px; padding: .65rem .8rem; border-left: 3px solid var(--muted); min-width: 0; }
+.why-force.buy { border-left-color: var(--buy); }
+.why-force.rent { border-left-color: var(--rent); }
+.why-force span { font-size: .78rem; color: var(--muted); font-weight: 600; }
+.why-force b { display: block; font-size: 1.05rem; font-variant-numeric: tabular-nums; margin: .1rem 0 .2rem; }
+.why-force p { margin: 0; font-size: .84rem; line-height: 1.45; }
+@media (max-width: 900px) {
+  .why-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .why-forces { grid-template-columns: 1fr; }
+}
+
+/* Tutte le città a confronto (scheda Insieme) */
+.cmp-controls { display: flex; flex-wrap: wrap; gap: .5rem .75rem; align-items: center; font-size: .85rem; margin-top: .25rem; }
+.cmp-controls label { color: var(--muted); }
+.cmp-controls select { padding: .3rem .5rem; font-size: .85rem; max-width: 100%; }
+.cmp-progress { color: var(--muted); font-size: .8rem; }
+.cmp-progress::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: .4rem; vertical-align: -1px; border: 2px solid var(--line); border-top-color: var(--buy); border-radius: 50%; animation: cmp-spin .8s linear infinite; }
+@keyframes cmp-spin { to { transform: rotate(360deg); } }
+.busy .cmp-mc { opacity: .5; transition: opacity .2s; }   /* Monte Carlo in corso: risultati precedenti attenuati */
+.cmp-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 150px minmax(0, 1.2fr); gap: .6rem; align-items: center; padding: .45rem 0; border-top: 1px solid var(--line); font-size: .88rem; }
+.cmp-row:first-child { border-top: 0; }
+.cmp-row .name small { display: block; color: var(--muted); font-size: .72rem; font-weight: 400; }
+.cmp-row.cur .name { font-weight: 700; }
+.cmp-row .track { position: relative; }
+.cmp-row .track.div { background: var(--bg); }   /* scenario medio: barra divergente dal centro */
+.cmp-row .fill { position: absolute; top: 0; left: 0; }
+.cmp-row .fill.r { background: var(--rent); }
+.cmp-row .mid { position: absolute; top: 0; bottom: 0; left: calc(50% - 1px); width: 2px; background: var(--surface); }
+.cmp-row .track.div .mid { background: var(--muted); }
+.cmp-row .word b { color: var(--text); }
+.cmp-row .med { color: var(--muted); font-size: .78rem; }
+.cmp-insight { margin-top: .9rem; font-size: .92rem; }
+.cmp-insight p { margin: .35rem 0; }
+.cmp-table tr.cur td { font-weight: 600; }
+
